@@ -13,7 +13,11 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                jakarta: ['Plus Jakarta Sans'],
             },
+            colors: {
+                'hydro-green': '#0E8743',
+            }
         },
     },
 

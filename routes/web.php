@@ -1,13 +1,18 @@
 <?php
 
+use App\Models\Produk;
+
 use App\Http\Controllers\ProdukController;
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('produk.index');
+    $produk = Produk::all();
+    return view('landing', compact('produk'));
 });
+
+// Route::get('/', [ProdukController::class, 'index']);
 
 Route::resource('produk', ProdukController::class);
 
