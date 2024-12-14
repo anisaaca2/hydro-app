@@ -53,8 +53,6 @@
             </button>
         </form>
 
-
-
         <!-- Menu Toggle for Mobile -->
         <div class="lg:hidden">
             <button @click="open = !open" class="text-white focus:outline-none">
@@ -69,15 +67,36 @@
             @if (Route::has('login'))
                                 <nav class="-mx-3 flex flex-1 justify-end">
                                     @auth
-                                        <a
-                                            href="{{ url('/') }}"
-                                            class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/50 focus:outline-none dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                                            >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                            </svg>
+                                        @if (auth()->check())
+                                        <div class="relative">
+                                            <button class="flex items-center focus:outline-none">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+                                            </button>
 
-                                        </a>
+                                            {{-- Dropdown --}}
+                                            <div class="z-10 bg-white divide-y divide-gray-500 rounded shadow-lg w-44">
+                                                <ul class="text-sm py-2 text-gray-700">
+                                                    <li>
+                                                        @if (auth()->user()->role === 'admin')
+                                                            <a class="block px-4 py-2 hover:bg-gray-300" href="#">Dashboard Admin</a>
+                                                        @elseif (auth()->user()->role === 'seller')
+                                                            <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('profile.penjual') }}">Profil</a>
+                                                        @elseif (auth()->user()->role === 'buyer')
+                                                            <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('profile.penjual') }}">Profil</a>
+                                                        @endif
+                                                    </li>
+                                                    <li>
+                                                        <form class="block px-4 py-2 hover:bg-gray-300" id="logout-form" action="{{ route('logout') }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit">Log Out</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        @endif
                                     @else
                                         <a
                                             href="{{ route('login') }}"
@@ -97,38 +116,48 @@
                                     @endauth
                                 </nav>
                             @endif
-
-            {{-- <a href="/"
-               class="px-4 py-2 rounded-lg text-white hover:text-hydro-green hover:bg-white transition duration-300 ease-in-out">
-                Home
-            </a>
-            <a href="/products"
-               class="px-4 py-2 rounded-lg text-white hover:text-hydro-green hover:bg-white transition duration-300 ease-in-out">
-                Products
-            </a>
-            <a href="/about"
-               class="px-4 py-2 rounded-lg text-white hover:text-hydro-green hover:bg-white transition duration-300 ease-in-out">
-                About
-            </a> --}}
         </div>
 
     </div>
 
     <!-- Mobile Menu -->
-    <div x-show="open"
-         x-transition:enter="transition-all duration-300 ease-in-out"
-         x-transition:enter-start="transform opacity-0 translate-y-4"
-         x-transition:enter-end="transform opacity-100 translate-y-0"
-         x-transition:leave="transition-all duration-300 ease-in-out"
-         x-transition:leave-start="transform opacity-100 translate-y-0"
-         x-transition:leave-end="transform opacity-0 translate-y-4"
-         class="lg:hidden mt-4">
-        <ul class="space-y-4">
-            <li><a href="/" class="block px-3 py-2 rounded hover:bg-gray-700">Home</a></li>
-            <li><a href="/products" class="block px-3 py-2 rounded hover:bg-gray-700">Products</a></li>
-            <li><a href="/about" class="block px-3 py-2 rounded hover:bg-gray-700">About</a></li>
-        </ul>
-    </div>
+
+    <div x-cloak x-show="openUserMenu"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 scale-95"
+    x-transition:enter-end="opacity-100 scale-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 scale-100"
+    x-transition:leave-end="opacity-0 scale-95"
+    class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+    <ul class="space-y-4">
+        <li>
+            @if (auth()->check())
+                @if (auth()->user()->role === 'admin')
+                    <a href="#">Dashboard Admin</a>
+                @elseif (auth()->user()->role === 'penjual')
+                    <a href="#">Hydro Seller Center</a>
+                @elseif (auth()->user()->role === 'pembeli')
+                    <a href="#">Profil Pembeli</a>
+                @endif
+            @else
+                <!-- Konten alternatif jika pengguna tidak login -->
+                <a href="{{ route('login') }}">Login</a>
+            @endif
+        </li>
+        <li>
+            @if (auth()->check())
+                <a href="{{ route('logout') }}"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Log Out
+                </a>
+            @endif
+        </li>
+    </ul>
+</div>
+
 </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.2/dist/cdn.min.js"></script>
+

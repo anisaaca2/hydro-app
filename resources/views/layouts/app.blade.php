@@ -25,5 +25,8 @@
             @include('layouts.partials.footer')
         </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.5/dist/cdn.min.js" defer></script>
+
+
     </body>
 </html>

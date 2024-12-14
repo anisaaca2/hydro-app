@@ -6,6 +6,9 @@ use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller;
+
 class ProdukController extends Controller
 {
     /**
@@ -108,4 +111,11 @@ class ProdukController extends Controller
         $produk->delete();
         return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus');
     }
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    $this->middleware(\App\Http\Middleware\EnsureUserIsSeller::class);
+    }
+
 }
