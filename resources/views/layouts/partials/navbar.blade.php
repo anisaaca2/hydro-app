@@ -33,34 +33,32 @@
 
         {{-- Search Bar --}}
 
-        <form class="flex items-center max-w-screen mx-auto bg-white rounded-full overflow-hidden">
-            <!-- Search Input -->
+        <form action="{{ route('produk.search') }}" method="GET" class="flex items-center bg-white rounded-full overflow-hidden w-full md:w-2/3 lg:w-3/5">
             <div class="relative flex-grow">
                 <input
                     type="text"
+                    name="q"
+                    value="{{ request('q') }}"
                     id="search"
                     class="border-none text-gray-700 text-sm w-full px-4 py-2 bg-transparent focus:outline-none focus:ring-0"
                     placeholder="Cari Produk Hidroponik">
             </div>
-
-            <!-- Search Button -->
-            <button
-                type="submit"
-                class="px-4 py-2 text-sm font-medium text-hydro-green focus:text-green-700 transition-all duration-300">
+            <button type="submit" class="px-4 py-2 text-sm font-medium text-hydro-green focus:text-green-700 transition-all duration-300">
                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10.5 18A7.5 7.5 0 1 1 18 10.5 7.5 7.5 0 0 1 10.5 18z"/>
                 </svg>
             </button>
         </form>
 
-        <!-- Menu Toggle for Mobile -->
-        <div class="lg:hidden">
+
+        <!-- Hamburger Menu (Disimpan) -->
+        {{-- <div class="lg:hidden">
             <button @click="open = !open" class="text-white focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
-        </div>
+        </div> --}}
 
         <!-- Desktop Navigation -->
         <div class="hidden lg:flex space-x-4">
@@ -68,33 +66,42 @@
                                 <nav class="-mx-3 flex flex-1 justify-end">
                                     @auth
                                         @if (auth()->check())
-                                        <div class="relative">
-                                            <button class="flex items-center focus:outline-none">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                                </svg>
-                                            </button>
-
+                                        <div class="relative" x-data="{ open: false }">
                                             {{-- Dropdown --}}
-                                            <div class="z-10 bg-white divide-y divide-gray-500 rounded shadow-lg w-44">
-                                                <ul class="text-sm py-2 text-gray-700">
-                                                    <li>
-                                                        @if (auth()->user()->role === 'admin')
-                                                            <a class="block px-4 py-2 hover:bg-gray-300" href="#">Dashboard Admin</a>
-                                                        @elseif (auth()->user()->role === 'seller')
-                                                            <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('profile.penjual') }}">Profil</a>
-                                                        @elseif (auth()->user()->role === 'buyer')
-                                                            <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('profile.penjual') }}">Profil</a>
-                                                        @endif
-                                                    </li>
-                                                    <li>
-                                                        <form class="block px-4 py-2 hover:bg-gray-300" id="logout-form" action="{{ route('logout') }}" method="POST">
-                                                            @csrf
-                                                            <button type="submit">Log Out</button>
-                                                        </form>
-                                                    </li>
-                                                </ul>
+                                            <div x-data="{ open: false }" class="relative inline-block text-left">
+                                                <!-- Tombol untuk membuka dropdown -->
+                                                <button @click="open = !open" @click.away="open = false" class="">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                    </svg>
+                                                </button>
+
+                                                <!-- Dropdown menu -->
+                                                <div x-show="open"
+                                                    x-transition
+                                                    class="absolute right-0 z-10 bg-white divide-y divide-gray-500 rounded shadow-lg w-44 mt-2">
+                                                    <ul class="text-sm py-2 text-gray-700">
+                                                        <li>
+                                                            @auth
+                                                                @if (auth()->user()->role === 'admin')
+                                                                    <a class="block px-4 py-2 hover:bg-gray-300" href="#">Dashboard Admin</a> <!-- Disimpan -->
+                                                                @elseif (auth()->user()->role === 'seller')
+                                                                    <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('seller.profile.penjual') }}">Profil</a>
+                                                                @elseif (auth()->user()->role === 'buyer')
+                                                                    <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('buyer.profile.pembeli') }}">Profil</a>
+                                                                @endif
+                                                            @endauth
+                                                        </li>
+                                                        <li>
+                                                            <form class="block px-4 py-2 hover:bg-gray-300" id="logout-form" action="{{ route('logout') }}" method="POST">
+                                                                @csrf
+                                                                <button type="submit" class="w-full text-left">Log Out</button>
+                                                            </form>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
+
                                         </div>
                                         @endif
                                     @else
@@ -120,44 +127,31 @@
 
     </div>
 
-    <!-- Mobile Menu -->
+    <!-- Mobile Navigation (Disimpan)-->
 
-    <div x-cloak x-show="openUserMenu"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0 scale-95"
-    x-transition:enter-end="opacity-100 scale-100"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100 scale-100"
-    x-transition:leave-end="opacity-0 scale-95"
-    class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-    <ul class="space-y-4">
-        <li>
-            @if (auth()->check())
-                @if (auth()->user()->role === 'admin')
-                    <a href="#">Dashboard Admin</a>
-                @elseif (auth()->user()->role === 'penjual')
-                    <a href="#">Hydro Seller Center</a>
-                @elseif (auth()->user()->role === 'pembeli')
-                    <a href="#">Profil Pembeli</a>
-                @endif
-            @else
-                <!-- Konten alternatif jika pengguna tidak login -->
-                <a href="{{ route('login') }}">Login</a>
-            @endif
-        </li>
-        <li>
-            @if (auth()->check())
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Log Out
-                </a>
-            @endif
-        </li>
-    </ul>
-</div>
+    {{-- <div x-show="open" class="sm:block lg:hidden ">
+        <ul class="text-sm py-2 text-gray-700">
+            <li>
+                @auth
+                    @if (auth()->user()->role === 'admin')
+                        <a class="block px-4 py-2 hover:bg-gray-300" href="#">Dashboard Admin</a>
+                    @elseif (auth()->user()->role === 'seller')
+                        <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('seller.profile.penjual') }}">Profil</a>
+                    @elseif (auth()->user()->role === 'buyer')
+                        <a class="block px-4 py-2 hover:bg-gray-300" href="{{ route('buyer.profile.pembeli') }}">Profil</a>
+                    @endif
+                @endauth
+            </li>
+            <li>
+                <form class="block px-4 py-2 hover:bg-gray-300" id="logout-form" action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full text-left">Log Out</button>
+                </form>
+            </li>
+        </ul>
+    </div> --}}
 
 </nav>
 
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.2/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 

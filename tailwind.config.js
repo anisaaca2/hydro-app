@@ -17,6 +17,7 @@ export default {
             },
             colors: {
                 'hydro-green': '#0E8743',
+                'hydro-yellow': '#FCC937',
             }
         },
     },

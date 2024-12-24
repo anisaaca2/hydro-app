@@ -15,4 +15,10 @@ class PenjualController extends Controller
         $produk = Produk::all();
         return view('profile.penjual', compact('produk'));
     }
+
+    public function show($id) {
+        $produk = Produk::findOrFail($id);
+        return view('produk.show', compact('produk'));
+    }
+
 }

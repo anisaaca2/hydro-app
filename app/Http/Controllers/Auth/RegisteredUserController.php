@@ -49,4 +49,9 @@ class RegisteredUserController extends Controller
 
         return redirect(route('landing', absolute: false));
     }
+
+    // public function show($id) {
+    //     $user = User::findOrFail($id);
+    //     return view('layouts.partials.navbar', compact('user'));
+    // }
 }

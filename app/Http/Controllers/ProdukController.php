@@ -11,12 +11,21 @@ use Illuminate\Routing\Controller;
 
 class ProdukController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    //     $this->middleware('seller');
+    // }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $produk = Produk::all();
+        $produk = Produk::where('status', true)->get();
+        $produk = Produk::orderBy('id', 'desc')->paginate(5);
         return view('produk.index', compact('produk'));
     }
 
@@ -51,7 +60,7 @@ class ProdukController extends Controller
             'gambar' => $path,
         ]);
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan.');
+        return redirect()->route('seller.produk.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
     /**
@@ -59,7 +68,7 @@ class ProdukController extends Controller
      */
     public function show(Produk $produk)
     {
-        return view('produk.show', compact('produk'));
+        return view('produk.pembeli.produkshow', compact('produk'));
     }
 
     /**
@@ -96,7 +105,7 @@ class ProdukController extends Controller
             'gambar' => $path,
         ]);
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil diubah');
+        return redirect()->route('seller.produk.index')->with('success', 'Produk berhasil diubah');
     }
 
     /**
@@ -109,13 +118,29 @@ class ProdukController extends Controller
         }
 
         $produk->delete();
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus');
+        return redirect()->route('seller.produk.index')->with('success', 'Produk berhasil dihapus');
     }
 
-    public function __construct()
+    public function togglestatus(Produk $produk)
     {
-        $this->middleware('auth');
-    $this->middleware(\App\Http\Middleware\EnsureUserIsSeller::class);
+        $produk->status = !$produk->status;
+        $produk->save();
+
+        $message = $produk->status
+            ? 'Produk berhasil diaktifkan.'
+            : 'Produk berhasil dinonaktifkan.';
+
+        return redirect()->route('seller.profile.penjual')->with('success', $message);
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+
+        $produk = Produk::where('name', 'like', '%' . $query . '%')
+                        ->orWhere('description', 'like', '%' . $query . '%')
+                        ->get();
+
+        return view('produk.search', compact('produk', 'query'));
+    }
 }
